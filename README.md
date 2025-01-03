@@ -76,6 +76,7 @@ The application was tested on the following system:
 | BitSet | Unique IPs | Execution Time | Memory Used |
 |--------|------------| -------------- |-------------|
 | 256    | 1000000000 | ~14m29s        | ~493.93 MB  |
+
 _For all BitSet sizes in single-threaded mode, the application uses up to 512 MB of memory for the full IPv4 address space. This is calculated as (example): `Memory = (2^32 / 256) * 32 bytes = 512 MB`. For smaller datasets, memory usage is reduced as fewer bits are set in the BitSet.  
 On described system, testing was conducted with the optimal configuration for a 256-bit BitSet._
 
