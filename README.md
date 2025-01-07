@@ -38,7 +38,7 @@ go test ./...
 ### Option 1: Using `go run`
 #### Run the IP Address Generator
 ```bash
-go run cmd/generator/main.go -output ip_addresses -count 1000000
+go run cmd/generator/main.go -test_file ip_addresses -count 1000000
 ```
 #### Run the IP Address Counter
 ```bash
@@ -58,7 +58,7 @@ go build -o ip-address-counter cmd/counter/main.go
 #### Run the binaries
 ##### Run the IP Address Generator
 ```bash
-./ip-address-generator -output ip_addresses -count 1000000
+./ip-address-generator -test_file ip_addresses -count 1000000
 ```
 ##### Run the IP Address Counter
 ```bash

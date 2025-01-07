@@ -12,7 +12,7 @@ type BitSetN struct {
 }
 
 func NewBitSetN(bitSize int) (*BitSetN, error) {
-	if bitSize != 32 && (bitSize%64 != 0 || bitSize < 64) {
+	if bitSize%64 != 0 || bitSize < 64 {
 		return nil, fmt.Errorf("wrong bitSet size: %d. Must be a multiple of 64", bitSize)
 	}
 	parts := bitSize / 64
