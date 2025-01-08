@@ -3,6 +3,7 @@ package counter
 import (
 	"fmt"
 	"math/bits"
+	"sync/atomic"
 )
 
 type BitSetN struct {
@@ -25,17 +26,30 @@ func NewBitSetN(bitSize int) (*BitSetN, error) {
 }
 
 func (b *BitSetN) SetBit(index int) {
-	wordIndex := index / b.bitSize
-	bitIndex := index % b.bitSize
-	partIndex := bitIndex / 64
-	bitOffset := bitIndex % 64
+	wordIndex, bitIndex := calculateIndexes(index, b.bitSize)
+	partIndex, bitOffset := calculatePartIndexes(bitIndex, 64)
 	b.array[wordIndex*b.parts+partIndex] |= 1 << bitOffset
 }
 
+func (b *BitSetN) AtomicSetBit(index int) bool {
+	wordIndex, bitIndex := calculateIndexes(index, b.bitSize)
+	partIndex, bitOffset := calculatePartIndexes(bitIndex, 64)
+
+	addr := &b.array[wordIndex*b.parts+partIndex]
+	for {
+		oldValue := atomic.LoadUint64(addr)
+		if oldValue&uint64(1<<bitOffset) != 0 {
+			return true
+		}
+		newValue := oldValue | uint64(1<<bitOffset)
+		if atomic.CompareAndSwapUint64(addr, oldValue, newValue) {
+			return false
+		}
+	}
+}
+
 func (b *BitSetN) IsBitSet(index int) bool {
-	wordIndex := index / b.bitSize
-	bitIndex := index % b.bitSize
-	partIndex := bitIndex / 64
-	bitOffset := bitIndex % 64
+	wordIndex, bitIndex := calculateIndexes(index, b.bitSize)
+	partIndex, bitOffset := calculatePartIndexes(bitIndex, 64)
 	return (b.array[wordIndex*b.parts+partIndex] & (1 << bitOffset)) != 0
 }

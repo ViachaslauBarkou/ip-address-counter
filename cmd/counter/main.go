@@ -29,8 +29,19 @@ func main() {
 	var memStatsStart runtime.MemStats
 	runtime.ReadMemStats(&memStatsStart)
 
-	fmt.Printf("Counting... file: %s | bitset: %d\n", cfg.TestFile, cfg.BitSetSize)
-	uniqueCount, err := counter.ProcessReader(file, bitset)
+	output := fmt.Sprintf("Counting... file: %s | bitset: %d | with concurrency: %t",
+		cfg.TestFile, cfg.BitSetSize, cfg.UseConcurrency)
+	if cfg.UseConcurrency {
+		output += fmt.Sprintf(" | workers number: %d", cfg.Workers)
+	}
+	fmt.Println(output)
+	var uniqueCount int
+	if cfg.UseConcurrency {
+		uniqueCount, err = counter.ProcessReaderWithConcurrency(file, bitset, cfg.Workers)
+	} else {
+		uniqueCount, err = counter.ProcessReader(file, bitset)
+	}
+
 	if err != nil {
 		fmt.Println("Error processing file:", err)
 		return
